@@ -6,7 +6,8 @@ contract SimpleStorage {
   string  public name = "Happy Token";
   string  public symbol = "Happy";
   string  public standard = "Happy Token v1.0";
-  string public admin = "0x2a8756Dcf5799EaFF37c827aC5822ef95A1610eF";
+  string  public admin;
+  string  public thirdParty;
   uint256 public totalSupply;
   uint256 public tokenPrice = 100;
   
@@ -44,14 +45,17 @@ contract SimpleStorage {
     
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] >= _value);
+         
+          require(balanceOf[msg.sender] >= _value);
 
-        balanceOf[msg.sender] -= _value;
-        balanceOf[_to] += _value;
+          balanceOf[msg.sender] -= _value;
+          balanceOf[_to] += _value;
 
-        Transfer(msg.sender, _to, _value);
+          Transfer(msg.sender, _to, _value);
+       return true;
 
-        return true;
+
+
     }
 
    

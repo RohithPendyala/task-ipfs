@@ -16,10 +16,12 @@ class App extends Component {
       ipfsHash: '',
       web3: null,
       buffer: null,
-      account: null
+      account: null,
+      thirdPartyAccount: null
     }
     this.captureFile = this.captureFile.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.onAccess = this.onAccess.bind(this);
   }
 
   componentWillMount() {
@@ -58,6 +60,9 @@ class App extends Component {
         this.simpleStorageInstance = instance
         this.setState({ account: accounts[0] })
         // Get the value from the contract to prove it worked.
+        this.setState({ thirdPartyAccount: accounts[1] })
+        console.log(this.state.account)
+        console.log(this.state.thirdPartyAccount)
         return this.simpleStorageInstance.get.call(accounts[0])
       }).then((ipfsHash) => {
         // Update state with the result.
@@ -101,6 +106,22 @@ class App extends Component {
   onAccess(event) {
     event.preventDefault()
     console.log("on access invoked")
+
+    const contract = require('truffle-contract')
+    const simpleStorage = contract(SimpleStorageContract)
+    simpleStorage.setProvider(this.state.web3.currentProvider)
+
+    //this.setState({ thirdPartyAccount: "0x35635309f8d8454149b5a31e6b2134Ddb6aaBD64"})
+    this.state.thirdPartyAccount = "0x35635309f8d8454149b5a31e6b2134Ddb6aaBD64"
+    if(this.state.thirdPartyAccount !== this.state.account){
+      this.simpleStorageInstance.transfer(this.state.account, 10, { from: this.state.thirdPartyAccount})
+        console.log("notified to admin")
+    }
+    else
+    {
+      console.log("no rewards to you buddy! admin")
+    }
+    
   }
 
   render() {
@@ -110,20 +131,21 @@ class App extends Component {
           <a href="#" className="pure-menu-heading pure-menu-link">IPFS File Upload DApp</a>
         </nav>
 
+        var content = $('#content')
         <main className="container">
           <div className="pure-g">
             <div className="pure-u-1-1">
               <h1>Your Document</h1>
               <p>This document is stored on IPFS & The Ethereum Blockchain!</p>
-              <img src={`https://ipfs.io/ipfs/${this.state.ipfsHash}`} alt=""/>
+              //<img src={`https://ipfs.io/ipfs/${this.state.ipfsHash}`} alt=""/> 
+              <a href={`https://ipfs.io/ipfs/${this.state.ipfsHash}`} target="_blank">click for the file</a>
               <h2>Upload document</h2>
               <form onSubmit={this.onSubmit} >
                 <input type='file' onChange={this.captureFile} />
                 <input type='submit' />
               </form>
               <form onSubmit={this.onAccess} >
-                <input type='file' onChange={this.captureFile} />
-                <input type='submit' value='accessFile'/>
+                <input type='submit' value='ThirdPartyAccess'/>
               </form>
             </div>
           </div>

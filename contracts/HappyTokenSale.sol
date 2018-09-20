@@ -35,7 +35,7 @@ contract HappyTokenSale {
         require(msg.value == tokenPrice);
         //require(tokenContract.balanceOf(this) >= _numberOfTokens);
 
-        if (keccak256(msg.sender) != keccak256(admin)) {
+        if (msg.sender != admin) {
             require(tokenContract.transfer(admin, msg.value));
         }
     }
